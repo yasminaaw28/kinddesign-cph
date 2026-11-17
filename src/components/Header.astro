@@ -1,0 +1,42 @@
+---
+const pathname = Astro.url.pathname;
+---
+
+<a class="a11y-skip" href="#main">Spring til indhold</a>
+<header class="site-header">
+  <div class="container nav-inner">
+    <a class="logo" href="/" aria-label="KindDesign CPH forside">
+      KIND<br />DESIGN<small>CPH</small>
+    </a>
+
+    <button
+      class="menu-btn"
+      id="menu-toggle"
+      type="button"
+      aria-label="Åbn menu"
+      aria-expanded="false"
+      aria-controls="nav-links"
+    >
+      ☰
+    </button>
+
+    <nav class="nav-links" id="nav-links" aria-label="Hovednavigation">
+      <a href="/" aria-current={pathname === '/' ? 'page' : undefined}>Forside</a>
+      <a href="/events/" aria-current={pathname.startsWith('/events') ? 'page' : undefined}>Events</a>
+      <a href="/om-os/" aria-current={pathname === '/om-os/' ? 'page' : undefined}>Om os</a>
+      <a class="pill" href="/om-os/#kontakt">Kontakt ↗</a>
+    </nav>
+  </div>
+</header>
+
+<script>
+  const toggle = document.querySelector<HTMLButtonElement>('#menu-toggle');
+  const nav = document.querySelector<HTMLElement>('#nav-links');
+
+  toggle?.addEventListener('click', () => {
+    const isOpen = nav?.classList.toggle('open') ?? false;
+    toggle.setAttribute('aria-expanded', String(isOpen));
+    toggle.setAttribute('aria-label', isOpen ? 'Luk menu' : 'Åbn menu');
+    toggle.textContent = isOpen ? '✕' : '☰';
+  });
+</script>

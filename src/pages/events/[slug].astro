@@ -1,0 +1,96 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getEvents } from '../../data/getEvents.js';
+
+export async function getStaticPaths() {
+  const events = await getEvents();
+
+  return events.map((event) => ({
+    params: { slug: event.id },
+    props: { event },
+  }));
+}
+
+const { event } = Astro.props;
+---
+
+
+
+<BaseLayout title={event.title} description={event.description}>
+  <section class="page-section">
+    <div class="container">
+      <a class="detail-back" href="/events/">← Tilbage til alle events</a>
+
+      <div class="detail-layout">
+        <article class="detail-main">
+          <img class="detail-image" src={event.image} alt="Deltagere ved et kreativt event" />
+          <div class="eyebrow" style="margin-top: 30px;">{event.tag} · KindDesign CPH</div>
+          <h1>{event.title}</h1>
+          <p>{event.description}</p>
+
+          <h2>Om arrangementet</h2>
+          <p>{event.body}</p>
+
+          <h2>Hvem kan deltage?</h2>
+          <p>Alle med interesse for kreativitet og design er velkomne, uanset erfaring og baggrund. Du kan sagtens komme alene.</p>
+
+          <div class="form-box" id="tilmelding">
+            <h2>Tilmeld dig</h2>
+            <p>Udfyld felterne for at afprøve tilmeldingsflowet.</p>
+
+            <form id="signup-form">
+              <div class="field">
+                <label for="name">Fulde navn</label>
+                <input id="name" name="name" autocomplete="name" required minlength="2" />
+              </div>
+
+              <div class="field">
+                <label for="email">E-mail</label>
+                <input id="email" name="email" type="email" autocomplete="email" required />
+              </div>
+
+              <div class="field">
+                <label>
+                  <input id="consent" type="checkbox" required style="width: auto; margin-right: 8px;" />
+                  Jeg accepterer, at mine oplysninger bruges til denne demo-tilmelding.
+                </label>
+              </div>
+
+              <button class="btn btn-dark" type="submit">Send tilmelding ↗</button>
+              <p id="form-message" class="form-message" role="status" aria-live="polite"></p>
+            </form>
+
+            <p style="font-size: 12px; color: var(--muted);">
+              Studieprototype: Der sendes ingen rigtig tilmelding, og ingen personoplysninger gemmes.
+            </p>
+          </div>
+        </article>
+
+        <aside class="info-card">
+          <h3>Praktisk info ✳</h3>
+          <div class="info-line"><strong>📅 Dato</strong>{event.dateText}</div>
+          <div class="info-line"><strong>◷ Tid</strong>{event.time}</div>
+          <div class="info-line"><strong>⌖ Sted</strong>{event.place}</div>
+          <div class="info-line"><strong>✦ Pris</strong>{event.price}</div>
+          <a href="#tilmelding" class="btn btn-dark">Tilmeld dig ↗</a>
+        </aside>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<script>
+  const form = document.querySelector<HTMLFormElement>('#signup-form');
+  const message = document.querySelector<HTMLElement>('#form-message');
+
+  form?.addEventListener('submit', (event) => {
+    event.preventDefault();
+    if (!form.reportValidity()) return;
+
+    const name = (form.elements.namedItem('name') as HTMLInputElement).value.trim();
+    if (message) {
+      message.textContent = `Tak, ${name}! Du har gennemført demo-tilmeldingen. Dette er ikke en rigtig pladsreservation.`;
+    }
+    form.reset();
+  });
+</script>

@@ -1,0 +1,67 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import EventCard from '../../components/EventCard.astro';
+import { getEvents } from '../../data/getEvents.js';
+
+const events = await getEvents();
+---
+
+<BaseLayout title="Kommende events" description="Kommende kreative events og workshops i København">
+  <section class="page-hero">
+    <div class="container">
+      <div class="eyebrow">Mød op · Bliv inspireret · Skab</div>
+      <h1>Kommende events</h1>
+      <p>Her finder du events, workshops og talks for kreative mennesker. Du er velkommen alene eller sammen med en ven.</p>
+    </div>
+  </section>
+
+  <section class="page-section">
+    <div class="container">
+      <div class="section-heading">
+        <h2>Find dit næste event</h2>
+        <p class="section-intro">Vælg en kategori, der passer til dig.</p>
+      </div>
+
+      <div class="filter-bar" role="group" aria-label="Filtrér events">
+        <button class="filter active" data-filter="alle" aria-pressed="true">Alle events</button>
+        <button class="filter" data-filter="Faellesskab" aria-pressed="false">Fællesskab</button>
+        <button class="filter" data-filter="Talk" aria-pressed="false">Talks</button>
+        <button class="filter" data-filter="Workshop" aria-pressed="false">Workshops</button>
+      </div>
+
+      <div id="event-list" class="event-grid">
+        {events.map((event) => <EventCard event={event} />)}
+      </div>
+      <p class="empty-state hide" id="empty-events" aria-live="polite">
+        Der er ingen events i den kategori endnu.
+      </p>
+    </div>
+  </section>
+</BaseLayout>
+
+<script>
+  const buttons = document.querySelectorAll<HTMLButtonElement>('.filter');
+  const cards = document.querySelectorAll<HTMLElement>('.event-card');
+  const empty = document.querySelector<HTMLElement>('#empty-events');
+
+  buttons.forEach((button) => {
+    button.addEventListener('click', () => {
+      const filter = button.dataset.filter;
+      let visible = 0;
+
+      buttons.forEach((item) => {
+        const active = item === button;
+        item.classList.toggle('active', active);
+        item.setAttribute('aria-pressed', String(active));
+      });
+
+      cards.forEach((card) => {
+        const show = filter === 'alle' || card.dataset.category === filter;
+        card.classList.toggle('hide', !show);
+        if (show) visible++;
+      });
+
+      empty?.classList.toggle('hide', visible > 0);
+    });
+  });
+</script>

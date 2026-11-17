@@ -1,0 +1,30 @@
+---
+import type { events } from '../data/events.js';
+
+type Event = (typeof events)[number];
+interface Props {
+  event: Event;
+}
+
+const { event } = Astro.props;
+---
+
+<article class="event-card" data-category={event.type}>
+  <a href={`/events/${event.id}/`} aria-label={`Læs om ${event.title}`}>
+    <div class="event-image">
+      <img src={event.image} alt="Kreative deltagere til arrangement" loading="lazy" />
+      <span class="event-badge">{event.tag}</span>
+    </div>
+  </a>
+
+  <div class="event-content">
+    <div class="event-date">{event.dateText} · {event.time}</div>
+    <h3>{event.title}</h3>
+    <p>{event.description}</p>
+    <div class="event-meta">
+      <span>⌖ {event.place}</span>
+      <span>✦ {event.price}</span>
+    </div>
+    <a class="text-link" href={`/events/${event.id}/`}>Læs mere og tilmeld dig ↗</a>
+  </div>
+</article>
